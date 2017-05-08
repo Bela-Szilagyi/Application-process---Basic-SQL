@@ -8,7 +8,7 @@ def get_name_columns():
         conn = psycopg2.connect(connect_str)
         conn.autocommit = True
         cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM mentors;""")
+        cursor.execute("""SELECT first_name, last_name FROM mentors;""")
         rows = cursor.fetchall()
         ui.print_result(rows, 'The 2 name columns of the mentors table:')
     except Exception as e:

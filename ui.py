@@ -1,3 +1,6 @@
+import pprint
+
+
 # @title: string - title of the menu
 # @list_options: list of strings - the options in the menu
 # @exit_message: string - the last option with (0) (example: "Back to main menu")
@@ -25,4 +28,15 @@ def get_inputs(list_labels, title):
 def print_error_message(message):
     print(message)
     print()
+    return
+
+
+# This function needs to print result of the query functions
+# @result: string or list or dictionary - result of the special function
+# @label: string - label of the result
+def print_result(results, label):
+    print(label)
+    for result in results:
+        pprint.pprint(result)
+
     return

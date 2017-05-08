@@ -1,4 +1,5 @@
 import psycopg2
+import ui
 
 
 def get_name_columns():
@@ -9,8 +10,7 @@ def get_name_columns():
         cursor = conn.cursor()
         cursor.execute("""SELECT * FROM mentors;""")
         rows = cursor.fetchall()
-        for row in rows:
-            print(row)
+        ui.print_result(rows, 'The 2 name columns of the mentors table:')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)

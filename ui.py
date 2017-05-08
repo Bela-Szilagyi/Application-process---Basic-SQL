@@ -37,17 +37,21 @@ def print_error_message(message):
 def print_result(columns, results, label):
     BOLD = '\033[1m'
     END = '\033[0m'
-    col_width_columns = max(len(data) for data in columns) + 2
-    col_width_results = max(len(data) for data in results) + 2
-    col_width = max(col_width_columns, col_width_results)
+    col_width = []
+    for column_index in range(len(columns)):
+        results_column = []
+        for result_index in range(len(results)):
+            results_column.append(str(results[result_index][column_index]))
+        results_column_width = len(max(results_column, key=len))
+        col_width.append(max(len(columns[column_index]), results_column_width) )
     print(label)
     print(BOLD, end='')
-    for column in columns:
-        print(column.ljust(col_width), ' ', end='')
+    for i, column in enumerate(columns):
+        print(column.ljust(col_width[i]), ' ', end='')
     print(END)
     for result in results:
-        for item in result:
-            print(item.ljust(col_width), ' ', end='')
+        for i, item in enumerate(result):
+            print(str(item).ljust(col_width[i]), ' ', end='')
         print()
     print()
     return

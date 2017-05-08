@@ -52,7 +52,20 @@ def get_full_name_and_phone_from_fist_name():
 
 
 def get_applicant_from_e_mail():
-    pass
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
+                       FROM applicants WHERE email LIKE '%@adipiscingenimmi.edu';""")
+        rows = cursor.fetchall()
+        ui.print_result(rows, 'Applicant data with given e-mail address')
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
+    finally:
+        return
 
 
 def get_inserted_applicant_data():

@@ -10,7 +10,8 @@ def get_name_columns():
         cursor = conn.cursor()
         cursor.execute("""SELECT first_name, last_name FROM mentors;""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'The 2 name columns of the mentors table:')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'The 2 name columns of the mentors table:')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
@@ -26,7 +27,8 @@ def get_nicknames():
         cursor = conn.cursor()
         cursor.execute("""SELECT nick_name FROM mentors WHERE city='Miskolc';""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'The nick_name-s of all mentors working at Miskolc')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'The nick_name-s of all mentors working at Miskolc')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
@@ -43,7 +45,8 @@ def get_full_name_and_phone_from_fist_name():
         cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
                        FROM applicants WHERE first_name='Carol';""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'Applicant data about Carol in 2 columns: full_name, phone_number')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data about Carol in 2 columns: full_name, phone_number')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
@@ -60,7 +63,8 @@ def get_applicant_from_e_mail():
         cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
                        FROM applicants WHERE email LIKE '%@adipiscingenimmi.edu';""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'Applicant data with given e-mail address')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data with given e-mail address')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
@@ -79,7 +83,8 @@ def get_inserted_applicant_data():
         cursor.execute(SQL, data)
         cursor.execute("""SELECT * FROM applicants WHERE application_code='54823';""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'Applicant data after inserting it')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data after inserting it')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
@@ -96,7 +101,8 @@ def get_updated_applicant_phone():
         cursor.execute("""UPDATE applicants SET phone_number = '003670/223-7459' WHERE first_name='Jemima' AND last_name='Foreman';""")
         cursor.execute("""SELECT phone_number FROM applicants WHERE first_name='Jemima' AND last_name='Foreman';""")
         rows = cursor.fetchall()
-        ui.print_result(rows, 'Applicant data after inserting it')
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data after inserting it')
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)

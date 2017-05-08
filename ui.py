@@ -34,11 +34,20 @@ def print_error_message(message):
 # This function needs to print result of the query functions
 # @result: string or list or dictionary - result of the special function
 # @label: string - label of the result
-def print_result(results, label):
+def print_result(columns, results, label):
+    BOLD = '\033[1m'
+    END = '\033[0m'
+    col_width_columns = max(len(data) for data in columns) + 2
+    col_width_results = max(len(data) for data in results) + 2
+    col_width = max(col_width_columns, col_width_results)
     print(label)
+    print(BOLD, end='')
+    for column in columns:
+        print(column.ljust(col_width), ' ', end='')
+    print(END)
     for result in results:
         for item in result:
-            print(item, ' ', end='')
+            print(item.ljust(col_width), ' ', end='')
         print()
     print()
     return

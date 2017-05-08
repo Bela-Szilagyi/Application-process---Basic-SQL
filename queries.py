@@ -19,7 +19,19 @@ def get_name_columns():
 
 
 def get_nicknames():
-    pass
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("""SELECT nick_name FROM mentors WHERE city='Miskolc';""")
+        rows = cursor.fetchall()
+        ui.print_result(rows, 'The nick_name-s of all mentors working at Miskolc')
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
+    finally:
+        return
 
 
 def get_full_name_and_phone_from_fist_name():

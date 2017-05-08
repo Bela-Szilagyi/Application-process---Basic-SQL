@@ -69,7 +69,22 @@ def get_applicant_from_e_mail():
 
 
 def get_inserted_applicant_data():
-    pass
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);" # Note: no quotes
+        data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", "54823", )
+        cursor.execute(SQL, data)
+        cursor.execute("""SELECT * FROM applicants WHERE application_code='54823';""")
+        rows = cursor.fetchall()
+        ui.print_result(rows, 'Applicant data after inserting it')
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
+    finally:
+        return
 
 
 def get_updated_applicant_phone():

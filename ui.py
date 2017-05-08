@@ -43,7 +43,7 @@ def print_result(columns, results, label):
         for result_index in range(len(results)):
             results_column.append(str(results[result_index][column_index]))
         results_column_width = len(max(results_column, key=len))
-        col_width.append(max(len(columns[column_index]), results_column_width) )
+        col_width.append(max(len(columns[column_index]), results_column_width))
     print(label)
     print(BOLD, end='')
     for i, column in enumerate(columns):

@@ -37,6 +37,8 @@ def print_error_message(message):
 def print_result(results, label):
     print(label)
     for result in results:
-        pprint.pprint(result)
-
+        for item in result:
+            print(item, ' ', end='')
+        print()
+    print()
     return

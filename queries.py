@@ -105,7 +105,17 @@ def get_updated_applicant_phone():
 
 
 def get_remove_applicants_by_e_mail():
-    pass
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("""DELETE FROM applicants WHERE email LIKE '%mauriseu.net';""")
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
+    finally:
+        return
 
 
 def main():

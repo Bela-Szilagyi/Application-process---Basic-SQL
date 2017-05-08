@@ -88,7 +88,20 @@ def get_inserted_applicant_data():
 
 
 def get_updated_applicant_phone():
-    pass
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("""UPDATE applicants SET phone_number = '003670/223-7459' WHERE first_name='Jemima' AND last_name='Foreman';""")
+        cursor.execute("""SELECT phone_number FROM applicants WHERE first_name='Jemima' AND last_name='Foreman';""")
+        rows = cursor.fetchall()
+        ui.print_result(rows, 'Applicant data after inserting it')
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
+    finally:
+        return
 
 
 def get_remove_applicants_by_e_mail():

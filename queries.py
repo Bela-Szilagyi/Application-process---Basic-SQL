@@ -1,22 +1,30 @@
 import psycopg2
 import ui
+import sys
 
 
-def get_name_columns():
+def init():
     try:
         connect_str = "dbname='en' user='en' host='localhost'"
         conn = psycopg2.connect(connect_str)
         conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("""SELECT first_name, last_name FROM mentors;""")
-        rows = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        ui.print_result(column_names, rows, 'The 2 name columns of the mentors table:')
+        return conn
     except Exception as e:
         print("Uh oh, can't connect. Invalid dbname, user or password?")
         print(e)
-    finally:
-        return
+        sys.exit()
+
+
+def get_name_columns():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT first_name, last_name FROM mentors;""")
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    ui.print_result(column_names, rows, 'The 2 name columns of the mentors table:')
+    cursor.close()
+    conn.close()
+    return
 
 
 def get_nicknames():

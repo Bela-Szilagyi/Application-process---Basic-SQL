@@ -23,7 +23,7 @@ def get_name_columns():
     answers = list(range(len(tables)+1))
     answer = ''
     while answer not in answers:
-        answer = ui.get_predefined_type_input(int)
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
     if answer != 0:
         table = tables[answer-1]
         query = 'SELECT first_name, last_name FROM "{}"'.format(table)
@@ -46,7 +46,7 @@ def get_nicknames():
     answers = list(range(len(cities)+1))
     answer = ''
     while answer not in answers:
-        answer = ui.get_predefined_type_input(int)
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
     if answer != 0:
         city = cities[answer-1]
         cursor.execute("SELECT nick_name FROM mentors WHERE city=%s", (city, ))
@@ -68,7 +68,7 @@ def get_full_name_and_phone_from_fist_name():
     answers = list(range(len(names)+1))
     answer = ''
     while answer not in answers:
-        answer = ui.get_predefined_type_input(int)
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
     if answer != 0:
         name = names[answer-1]
         cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
@@ -84,7 +84,6 @@ def get_full_name_and_phone_from_fist_name():
 def get_applicant_from_e_mail():
     conn = init()
     cursor = conn.cursor()
-
     cursor.execute("""SELECT email FROM applicants;""")
     rows = cursor.fetchall()
     emails = [email[0] for email in rows]
@@ -97,7 +96,7 @@ def get_applicant_from_e_mail():
     answers = list(range(len(chopped_emails)+1))
     answer = ''
     while answer not in answers:
-        answer = ui.get_predefined_type_input(int)
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
     if answer != 0:
         email = '%' + chopped_emails[answer-1]
         cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
@@ -113,10 +112,26 @@ def get_applicant_from_e_mail():
 def get_inserted_applicant_data():
     conn = init()
     cursor = conn.cursor()
-    SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);" # Note: no quotes
-    data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", "54823", )
+    cursor.execute("""SELECT * FROM applicants;""")
+    column_names = [desc[0] for desc in cursor.description][1:-1]
+    predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
+    application_datas = []
+    for i, column_name in enumerate(column_names):
+        application_datas.append(ui.get_predefined_type_input(column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
+    for i in range(len(application_datas)):
+        if application_datas[i] == '':
+            application_datas[i] = predefined_applicaton_data[i]
+    print(application_datas)
+    cursor.execute("""SELECT application_code FROM applicants;""")
+    rows = cursor.fetchall()
+    predefined_application_code = 54823
+    application_codes = [code[0] for code in rows]
+    while predefined_application_code in application_codes:
+        predefined_application_code += 1
+    SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
+    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3], predefined_application_code, )
     cursor.execute(SQL, data)
-    cursor.execute("""SELECT * FROM applicants WHERE application_code='54823';""")
+    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (predefined_application_code, ))
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
     ui.print_result(column_names, rows, 'Applicant data after inserting it')

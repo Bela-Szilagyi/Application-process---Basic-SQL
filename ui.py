@@ -1,4 +1,3 @@
-import pprint
 
 
 # @title: string - title of the menu
@@ -23,11 +22,11 @@ def get_inputs(list_labels, title):
     return inputs
 
 
-def get_predefined_type_input(type):
+def get_predefined_type_input(input_text, type):
     input_type = False
     while input_type is False:
             try:
-                result = type(input())
+                result = type(input(input_text))
             except:
                 print_error_message('The given input is not applicable!')
                 continue

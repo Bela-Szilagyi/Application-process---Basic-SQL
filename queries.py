@@ -31,8 +31,8 @@ def get_name_columns():
         rows = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
         ui.print_result(column_names, rows, 'The 2 name columns of the {} table:'.format(table))
-        cursor.close()
-        conn.close()
+    cursor.close()
+    conn.close()
     return
 
 
@@ -53,19 +53,29 @@ def get_nicknames():
         rows = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
         ui.print_result(column_names, rows, 'The nick_name-s of all mentors working at {}'.format(city))
-        cursor.close()
-        conn.close()
+    cursor.close()
+    conn.close()
     return
 
 
 def get_full_name_and_phone_from_fist_name():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
-                    FROM applicants WHERE first_name='Carol';""")
+    cursor.execute("""SELECT first_name FROM applicants;""")
     rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'Applicant data about Carol in 2 columns: full_name, phone_number')
+    names = [name[0] for name in rows]
+    ui.print_menu('Which applicant\'s name and phone number do you want to know?', names, 'Return to main menu')
+    answers = list(range(len(names)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input(int)
+    if answer != 0:
+        name = names[answer-1]
+        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
+                       FROM applicants WHERE first_name=%s;""", (name, ))
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
     cursor.close()
     conn.close()
     return

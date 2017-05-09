@@ -84,11 +84,27 @@ def get_full_name_and_phone_from_fist_name():
 def get_applicant_from_e_mail():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
-                    FROM applicants WHERE email LIKE '%@adipiscingenimmi.edu';""")
+
+    cursor.execute("""SELECT email FROM applicants;""")
     rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'Applicant data with given e-mail address')
+    emails = [email[0] for email in rows]
+    chopped_emails = []
+    for email in emails:
+        while email[0] != '@':
+            email = email[1:]
+        chopped_emails.append(email)
+    ui.print_menu('Which e-mail address data do you want to know?', chopped_emails, 'Return to main menu')
+    answers = list(range(len(chopped_emails)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input(int)
+    if answer != 0:
+        email = '%' + chopped_emails[answer-1]
+        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
+                        FROM applicants WHERE email LIKE %s;""", (email, ))
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'Applicant data for {} e-mail address'.format(email))
     cursor.close()
     conn.close()
     return

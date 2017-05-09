@@ -6,11 +6,11 @@ import queries
 def handle_menu():
     options = ["A query that returns the 2 name columns of the given table",
                "A query that returns the nicknames of all mentors working at the given city",
-               "A query that returns applicant data about Carol in 2 columns: full_name, phone_number",
+               "A query that returns applicant data about given name in 2 columns: full_name, phone_number",
                "A query that returns applicant data with given e-mail address",
                "A query that returns applicant data after inserting it",
                "A query that returns applicant phone number after updating it",
-               "A query that removes all applicants with given e-mail"]
+               "A query that removes all applicants with given e-mail domain"]
 
     ui.print_menu("Main menu", options, "Exit program")
 

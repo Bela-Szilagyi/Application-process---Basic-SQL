@@ -39,12 +39,22 @@ def get_name_columns():
 def get_nicknames():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""SELECT nick_name FROM mentors WHERE city='Miskolc';""")
+    cursor.execute("""SELECT DISTINCT city FROM mentors;""")
     rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'The nick_name-s of all mentors working at Miskolc')
-    cursor.close()
-    conn.close()
+    cities = [city[0] for city in rows]
+    ui.print_menu('From which city do you want the nicknames of the mentors?', cities, 'Return to main menu')
+    answers = list(range(len(cities)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input(int)
+    if answer != 0:
+        city = cities[answer-1]
+        cursor.execute("SELECT nick_name FROM mentors WHERE city=%s", (city, ))
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'The nick_name-s of all mentors working at {}'.format(city))
+        cursor.close()
+        conn.close()
     return
 
 

@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2 import sql
 import ui
 import sys
 
@@ -140,16 +141,40 @@ def get_inserted_applicant_data():
     return
 
 
-def get_updated_applicant_phone():
+def get_updated_applicant_data():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""UPDATE applicants SET phone_number = '003670/223-7459' WHERE first_name='Jemima' AND last_name='Foreman';""")
-    cursor.execute("""SELECT phone_number FROM applicants WHERE first_name='Jemima' AND last_name='Foreman';""")
+    cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name" FROM applicants;""")
     rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'Applicant data after inserting it')
-    cursor.close()
-    conn.close()
+    names = [name[0] for name in rows]
+    ui.print_menu('Which applicant\'s data do you want to update?', names, 'Return to main menu')
+    answers = list(range(len(names)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
+    if answer != 0:
+        name = names[answer-1]
+        cursor.execute("""SELECT * FROM applicants;""")
+        column_names = [desc[0] for desc in cursor.description][3:-1]
+        ui.print_menu('Which data do you want to update?', column_names, 'Return to main menu')
+        choices = list(range(len(column_names)+1))
+        choice = ''
+        while choice not in choices:
+            choice = ui.get_predefined_type_input("Please enter a number: ", int)
+        if choice != 0:
+            column_name = column_names[choice-1]
+            input_data = ui.get_predefined_type_input("Please enter the new {}: ".format(column_name), str)
+            query = "UPDATE applicants SET {} = %s WHERE CONCAT (first_name, ' ', last_name) = %s;".format(column_name)
+            data = (input_data, name)
+            cursor.execute(query, data)
+            query = "SELECT {} FROM applicants WHERE CONCAT (first_name, ' ', last_name) = %s;".format(column_name)
+            data = (name, )
+            cursor.execute(query, data)
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            ui.print_result(column_names, rows, 'Applicant {} after inserting it:'.format(column_name))
+            cursor.close()
+            conn.close()
     return
 
 

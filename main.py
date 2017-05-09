@@ -9,7 +9,7 @@ def handle_menu():
                "A query that returns applicant data about given name in 2 columns: full_name, phone_number",
                "A query that returns applicant data with given e-mail address",
                "A query that returns applicant data after inserting it",
-               "A query that returns applicant phone number after updating it",
+               "A query that returns applicant data after updating it",
                "A query that removes all applicants with given e-mail domain"]
 
     ui.print_menu("Main menu", options, "Exit program")
@@ -29,7 +29,7 @@ def choose():
     elif option == "5":
         queries.get_inserted_applicant_data()
     elif option == "6":
-        queries.get_updated_applicant_phone()
+        queries.get_updated_applicant_data()
     elif option == "7":
         queries.get_remove_applicants_by_e_mail()
     elif option == "0":

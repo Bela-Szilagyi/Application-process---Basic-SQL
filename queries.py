@@ -18,12 +18,21 @@ def init():
 def get_name_columns():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""SELECT first_name, last_name FROM mentors;""")
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'The 2 name columns of the mentors table:')
-    cursor.close()
-    conn.close()
+    tables = ['mentors', 'applicants']
+    ui.print_menu('From which table do you want the 2 name columns?', tables, 'Return to main menu')
+    answers = list(range(len(tables)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input(int)
+    if answer != 0:
+        table = tables[answer-1]
+        query = 'SELECT first_name, last_name FROM "{}"'.format(table)
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(column_names, rows, 'The 2 name columns of the {} table:'.format(table))
+        cursor.close()
+        conn.close()
     return
 
 

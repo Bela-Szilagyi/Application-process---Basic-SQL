@@ -23,6 +23,19 @@ def get_inputs(list_labels, title):
     return inputs
 
 
+def get_predefined_type_input(type):
+    input_type = False
+    while input_type is False:
+            try:
+                result = type(input())
+            except:
+                print_error_message('The given input is not applicable!')
+                continue
+            else:
+                input_type = True
+    return result
+
+
 # This function needs to print an error message. (example: Error: @message)
 # @message: string - the error message
 def print_error_message(message):

@@ -25,13 +25,13 @@ def choose():
     elif option == "3":
         queries.get_full_name_and_phone_from_fist_name()
     elif option == "4":
-        queries.get_applicant_from_e_mail()
+        queries.get_applicant_from_email()
     elif option == "5":
         queries.get_inserted_applicant_data()
     elif option == "6":
         queries.get_updated_applicant_data()
     elif option == "7":
-        queries.get_remove_applicants_by_e_mail()
+        queries.remove_applicants_by_email_domain()
     elif option == "0":
         sys.exit(0)
     else:

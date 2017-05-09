@@ -39,7 +39,6 @@ def get_predefined_type_input(input_text, type):
 # @message: string - the error message
 def print_error_message(message):
     print(message)
-    print()
     return
 
 

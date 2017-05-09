@@ -1,5 +1,4 @@
 import psycopg2
-from psycopg2 import sql
 import ui
 import sys
 
@@ -11,8 +10,8 @@ def init():
         conn.autocommit = True
         return conn
     except Exception as e:
-        print("Uh oh, can't connect. Invalid dbname, user or password?")
-        print(e)
+        error_message = "Uh oh, can't connect. Invalid dbname, user or password? \n" + str(e)
+        ui.print_error_message(error_message)
         sys.exit()
 
 
@@ -76,13 +75,14 @@ def get_full_name_and_phone_from_fist_name():
                        FROM applicants WHERE first_name=%s;""", (name, ))
         rows = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
-        ui.print_result(column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
+        ui.print_result(
+            column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
     cursor.close()
     conn.close()
     return
 
 
-def get_applicant_from_e_mail():
+def get_applicant_from_email():
     conn = init()
     cursor = conn.cursor()
     cursor.execute("""SELECT email FROM applicants;""")
@@ -118,11 +118,12 @@ def get_inserted_applicant_data():
     predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
     application_datas = []
     for i, column_name in enumerate(column_names):
-        application_datas.append(ui.get_predefined_type_input(column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
+        application_datas.append(
+            ui.get_predefined_type_input(
+                column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
     for i in range(len(application_datas)):
         if application_datas[i] == '':
             application_datas[i] = predefined_applicaton_data[i]
-    print(application_datas)
     cursor.execute("""SELECT application_code FROM applicants;""")
     rows = cursor.fetchall()
     predefined_application_code = 54823
@@ -130,7 +131,8 @@ def get_inserted_applicant_data():
     while predefined_application_code in application_codes:
         predefined_application_code += 1
     SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
-    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3], predefined_application_code, )
+    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3],
+            predefined_application_code, )
     cursor.execute(SQL, data)
     cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (predefined_application_code, ))
     rows = cursor.fetchall()
@@ -173,15 +175,31 @@ def get_updated_applicant_data():
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             ui.print_result(column_names, rows, 'Applicant {} after inserting it:'.format(column_name))
-            cursor.close()
-            conn.close()
+    cursor.close()
+    conn.close()
     return
 
 
-def get_remove_applicants_by_e_mail():
+def remove_applicants_by_email_domain():
     conn = init()
     cursor = conn.cursor()
-    cursor.execute("""DELETE FROM applicants WHERE email LIKE '%mauriseu.net';""")
+    cursor.execute("""SELECT email FROM applicants;""")
+    rows = cursor.fetchall()
+    emails = [email[0] for email in rows]
+    chopped_emails = []
+    for email in emails:
+        while email[0] != '@':
+            email = email[1:]
+        email = email[1:]
+        chopped_emails.append(email)
+    ui.print_menu('Choose domain which you want to remove:', chopped_emails, 'Return to main menu')
+    answers = list(range(len(chopped_emails)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
+    if answer != 0:
+        email = '%' + chopped_emails[answer-1]
+        cursor.execute("""DELETE FROM applicants WHERE email LIKE %s;""", (email, ))
     cursor.close()
     conn.close()
     return

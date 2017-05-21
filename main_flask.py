@@ -28,7 +28,7 @@ def handle_menu():
                ("A query that returns the nicknames of all mentors working at the given city","menu_nicknames"),
                ("A query that returns applicant data about given name in 2 columns: full_name, phone_number","menu_full_name_and_phone_from_fist_name"),
                ("A query that returns applicant data with given e-mail address","menu_applicant_from_email"),
-               ("A query that returns applicant data after inserting it","menu_inserted_applicant_data"),
+               ("A query that returns applicant data after inserting it","menu_insert_applicant_data"),
                ("A query that returns applicant data after updating it","menu_updated_applicant_data"),
                ("A query that removes all applicants with given e-mail domain","menu_remove_applicants_by_email_domain")]
     return render_template('menu.html', title=title, menu_items=menu_items)
@@ -151,6 +151,77 @@ def get_applicant_from_email(email):
     title = 'Applicant data for {} e-mail address'.format(email)
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
+
+@app.route("/menu_insert_applicant_data")
+def menu_insert_applicant_data():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT application_code FROM applicants;""")
+    rows = cursor.fetchall()
+    application_codes = [code[0] for code in rows]
+    application_code = max(application_codes) + 1
+    print(application_code)
+    cursor.execute("""SELECT * FROM applicants;""")
+    title = "Application form"
+    column_names = [desc[0] for desc in cursor.description][1:-1]
+    return render_template('applicant_form.html', title=title, column_names=column_names, code=application_code)
+
+'''
+def get_inserted_applicant_data():
+    predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
+    application_datas = []
+    for i, column_name in enumerate(column_names):
+        application_datas.append(
+            ui.get_predefined_type_input(
+                column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
+    for i in range(len(application_datas)):
+        if application_datas[i] == '':
+            application_datas[i] = predefined_applicaton_data[i]
+    SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
+    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3],
+            predefined_application_code, )
+    cursor.execute(SQL, data)
+    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (predefined_application_code, ))
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    ui.print_result(column_names, rows, 'Applicant data after inserting it')
+    cursor.close()
+    conn.close()
+    return
+'''
+'''
+def get_inserted_applicant_data():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT * FROM applicants;""")
+    column_names = [desc[0] for desc in cursor.description][1:-1]
+    predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
+    application_datas = []
+    for i, column_name in enumerate(column_names):
+        application_datas.append(
+            ui.get_predefined_type_input(
+                column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
+    for i in range(len(application_datas)):
+        if application_datas[i] == '':
+            application_datas[i] = predefined_applicaton_data[i]
+    cursor.execute("""SELECT application_code FROM applicants;""")
+    rows = cursor.fetchall()
+    predefined_application_code = 54823
+    application_codes = [code[0] for code in rows]
+    while predefined_application_code in application_codes:
+        predefined_application_code += 1
+    SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
+    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3],
+            predefined_application_code, )
+    cursor.execute(SQL, data)
+    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (predefined_application_code, ))
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    ui.print_result(column_names, rows, 'Applicant data after inserting it')
+    cursor.close()
+    conn.close()
+    return
+'''
 
 @app.errorhandler(404)
 def page_not_found(e):

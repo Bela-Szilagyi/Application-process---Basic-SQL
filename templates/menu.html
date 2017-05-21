@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title> {{ title }} </title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+
+    <h1> {{ title }} </h1>
+
+    <form action="/submenu">
+            {% for key,value in menu_items %}
+                <input type="radio" name="submenu" value=" {{ value|e }} " > {{ key|e }} <br>
+            {% endfor %}
+        </select>
+        <input type="submit">
+    </form>
+
+</body>
+
+</html>

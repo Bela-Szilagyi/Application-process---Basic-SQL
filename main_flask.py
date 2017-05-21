@@ -86,6 +86,58 @@ def get_nicknames(city):
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
+'''
+def get_full_name_and_phone_from_fist_name():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT first_name FROM applicants;""")
+    rows = cursor.fetchall()
+    names = [name[0] for name in rows]
+    ui.print_menu('Which applicant\'s name and phone number do you want to know?', names, 'Return to main menu')
+    answers = list(range(len(names)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
+    if answer != 0:
+        name = names[answer-1]
+        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
+                       FROM applicants WHERE first_name=%s;""", (name, ))
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(
+            column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
+    cursor.close()
+    conn.close()
+    return
+'''
+
+
+'''
+def get_full_name_and_phone_from_fist_name():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT first_name FROM applicants;""")
+    rows = cursor.fetchall()
+    names = [name[0] for name in rows]
+    ui.print_menu('Which applicant\'s name and phone number do you want to know?', names, 'Return to main menu')
+    answers = list(range(len(names)+1))
+    answer = ''
+    while answer not in answers:
+        answer = ui.get_predefined_type_input("Please enter a number: ", int)
+    if answer != 0:
+        name = names[answer-1]
+        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
+                       FROM applicants WHERE first_name=%s;""", (name, ))
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        ui.print_result(
+            column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
+    cursor.close()
+    conn.close()
+    return
+'''
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404

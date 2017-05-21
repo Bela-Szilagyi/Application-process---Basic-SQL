@@ -1,0 +1,43 @@
+/* colors
+    LIGHT SALMON: #F79F79;
+    PEACH-ORANGE: #F7D08A;
+    KEY LIME: #E3F09B;
+    PEWTER BLUE: #87B6A7;
+    UMBER: #5B5941;
+*/
+
+body {
+    background: linear-gradient(to right, #5B5941, #87B6A7);
+    color: #E3F09B;
+}
+
+a:link, a:visited {
+    background-color: #F7D08A; 
+    color: #5B5941;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:hover, a:active {
+    background-color: #E3F09B;
+}
+
+h1 {
+    text-align: center
+}
+
+.button {
+    background-color: #F7D08A;
+    border: none;
+    color: #5B5941;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button:hover {
+    background-color: #E3F09B;
+}

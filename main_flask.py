@@ -16,10 +16,12 @@ def handle_menu():
                ("A query that returns applicant data after inserting it","get_inserted_applicant_data"),
                ("A query that returns applicant data after updating it","get_updated_applicant_data"),
                ("A query that removes all applicants with given e-mail domain","remove_applicants_by_email_domain")]
-
-    # ui.print_menu("Main menu", options, "Exit program")
-
     return render_template('menu.html', title=title, menu_items=menu_items)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 def choose():

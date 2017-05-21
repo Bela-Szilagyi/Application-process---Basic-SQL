@@ -1,7 +1,7 @@
 import sys
 import ui
 import queries
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import psycopg2
 import sys
 
@@ -160,35 +160,34 @@ def menu_insert_applicant_data():
     rows = cursor.fetchall()
     application_codes = [code[0] for code in rows]
     application_code = max(application_codes) + 1
-    print(application_code)
     cursor.execute("""SELECT * FROM applicants;""")
     title = "Application form"
     column_names = [desc[0] for desc in cursor.description][1:-1]
+    # predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
     return render_template('applicant_form.html', title=title, column_names=column_names, code=application_code)
 
-'''
+
+@app.route("/get_inserted_applicant_data")
 def get_inserted_applicant_data():
-    predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
-    application_datas = []
-    for i, column_name in enumerate(column_names):
-        application_datas.append(
-            ui.get_predefined_type_input(
-                column_name + '(if {}, press enter)? '.format(predefined_applicaton_data[i]), str))
-    for i in range(len(application_datas)):
-        if application_datas[i] == '':
-            application_datas[i] = predefined_applicaton_data[i]
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    phone_number = request.args.get('phone_number')
+    email = request.args.get('email')
+    application_code = request.args.get('code')
     SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
-    data = (application_datas[0], application_datas[1], application_datas[2], application_datas[3],
-            predefined_application_code, )
+    data = (first_name, last_name, phone_number, email, application_code)
+    conn = init()
+    cursor = conn.cursor()
     cursor.execute(SQL, data)
-    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (predefined_application_code, ))
+    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (application_code, ))
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
-    ui.print_result(column_names, rows, 'Applicant data after inserting it')
     cursor.close()
     conn.close()
-    return
-'''
+    title = 'Applicant data after inserting'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
+
 '''
 def get_inserted_applicant_data():
     conn = init()
@@ -222,6 +221,7 @@ def get_inserted_applicant_data():
     conn.close()
     return
 '''
+
 
 @app.errorhandler(404)
 def page_not_found(e):

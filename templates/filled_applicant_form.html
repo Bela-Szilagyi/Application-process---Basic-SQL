@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title> {{ title }} </title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+
+    <h1> {{ title }} </h1>
+
+    <form action="/get_updated_applicant_data" >
+        <table>
+            {% for item in datas %}
+                <tr>
+                    <td>
+                        <label for="{{ item[0] }}"> {{ item[0] }} </label>
+                    </td>
+                    <td>
+                        <input name="{{ item[0] }}" id="{{ item[0] }}" value="{{ item[1] }}">
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Submit application" class="button">
+        <input type="hidden" value={{ code }} name="code" >
+    </form>
+
+</body>
+
+</html>

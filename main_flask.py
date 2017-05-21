@@ -52,8 +52,37 @@ def get_name_columns(table):
     column_names = [desc[0] for desc in cursor.description]
     cursor.close()
     conn.close()
-    # ui.print_result(column_names, rows, 'The 2 name columns of the {} table:'.format(table))
     title = 'The 2 name columns of the {} table:'.format(table)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
+
+@app.route('/menu_nicknames')
+def menu_nicknames():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT DISTINCT city FROM mentors;""")
+    rows = cursor.fetchall()
+    cities = [city[0] for city in rows]
+    cursor.close()
+    conn.close()
+    title = 'From which city do you want the nicknames of the mentors?'
+    menu_items = []
+    for city in cities:
+        menu_items.append((city, '/get_nicknames/{}'.format(city)))
+    return render_template('menu.html', title=title, menu_items=menu_items)
+
+
+@app.route('/get_nicknames/<city>')
+def get_nicknames(city):
+    conn = init()
+    cursor = conn.cursor()
+    query = "SELECT nick_name FROM mentors WHERE city='{}'".format(city)
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The nick_name-s of all mentors working at {}'.format(city)
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 

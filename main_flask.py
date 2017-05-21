@@ -116,18 +116,41 @@ def get_full_name_and_phone_from_fist_name(name):
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
-'''
-def get_full_name_and_phone_from_fist_name():
-        cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name", phone_number
-                       FROM applicants WHERE first_name=%s;""", (name, ))
-        rows = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        ui.print_result(
-            column_names, rows, 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name))
+@app.route('/menu_applicant_from_email')
+def menu_applicant_from_email():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT email FROM applicants;""")
+    rows = cursor.fetchall()
+    emails = [email[0] for email in rows]
+    chopped_emails = []
+    for email in emails:
+        while email[0] != '@':
+            email = email[1:]
+        chopped_emails.append(email)
     cursor.close()
     conn.close()
-    return
-'''
+    title = 'Which e-mail address data do you want to know?'
+    menu_items = []
+    for email in chopped_emails:
+        menu_items.append((email, '/get_applicant_from_email/{}'.format(email)))
+    return render_template('menu.html', title=title, menu_items=menu_items)
+
+
+@app.route('/get_applicant_from_email/<email>')
+def get_applicant_from_email(email):
+    conn = init()
+    cursor = conn.cursor()
+    email = '%' + email
+    query = "SELECT CONCAT (first_name, ' ', last_name) AS full_name, phone_number FROM applicants WHERE email LIKE '{}'".format(email)
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'Applicant data for {} e-mail address'.format(email)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
 
 @app.errorhandler(404)
 def page_not_found(e):

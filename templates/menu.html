@@ -12,11 +12,9 @@
 
     <h1> {{ title }} </h1>
 
-            {% for key,value in menu_items %}
-                <p>
-                    <a href=" {{ value|e }}" > {{ key|e }} </a>
-                </p>
-            {% endfor %}
+    {% for key,value in menu_items %}
+        <p> <a href=" {{ value|e }}" > {{ key|e }} </a> </p>
+    {% endfor %}
 
 </body>
 

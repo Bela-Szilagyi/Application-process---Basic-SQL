@@ -1,7 +1,7 @@
 import sys
 import ui
 import queries
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import psycopg2
 import sys
 
@@ -240,6 +240,40 @@ def get_updated_applicant_data():
     conn.close()
     title = 'Applicant data after update'
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
+
+@app.route('/menu_remove_applicants_by_email_domain')
+def menu_remove_applicants_by_email_domain():
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT email FROM applicants;""")
+    rows = cursor.fetchall()
+    emails = [email[0] for email in rows]
+    chopped_emails = []
+    for email in emails:
+        while email[0] != '@':
+            email = email[1:]
+        email = email[1:]
+        chopped_emails.append(email)
+    chopped_emails = set(chopped_emails)
+    cursor.close()
+    conn.close()
+    title = 'Choose domain which you want to remove'
+    menu_items = []
+    for email in chopped_emails:
+        menu_items.append((email, '/remove_applicants_by_email_domain/{}'.format(email)))
+    return render_template('menu.html', title=title, menu_items=menu_items)
+
+
+@app.route('/remove_applicants_by_email_domain/<domain>')
+def remove_applicants_by_email_domain(domain):
+    email = '%' + domain
+    conn = init()
+    cursor = conn.cursor()
+    cursor.execute("""DELETE FROM applicants WHERE email LIKE %s;""", (email, ))
+    cursor.close()
+    conn.close()
+    return redirect('/')
 
 
 @app.errorhandler(404)

@@ -2,8 +2,23 @@ import sys
 import ui
 import queries
 from flask import Flask, render_template
+import psycopg2
+import sys
+
 
 app = Flask(__name__)
+
+
+def init():
+    try:
+        connect_str = "dbname='en' user='en' host='localhost'"
+        conn = psycopg2.connect(connect_str)
+        conn.autocommit = True
+        return conn
+    except Exception as e:
+        error_message = "Uh oh, can't connect. Invalid dbname, user or password? \n" + str(e)
+        ui.print_error_message(error_message)
+        sys.exit()
 
 
 @app.route('/')
@@ -22,32 +37,24 @@ def handle_menu():
 @app.route('/menu_name_columns')
 def menu_name_columns():
     title = 'Name columns menu'
-    menu_items = [('mentors', 'mentors'),
-                  ('applicants', 'applicants')]
+    menu_items = [('mentors', '/get_name_columns/mentors'),
+                  ('applicants', '/get_name_columns/applicants')]
     return render_template('menu.html', title=title, menu_items=menu_items)
 
 
-'''
-def get_name_columns():
+@app.route('/get_name_columns/<table>')
+def get_name_columns(table):
     conn = init()
     cursor = conn.cursor()
-    tables = ['mentors', 'applicants']
-    ui.print_menu('From which table do you want the 2 name columns?', tables, 'Return to main menu')
-    answers = list(range(len(tables)+1))
-    answer = ''
-    while answer not in answers:
-        answer = ui.get_predefined_type_input("Please enter a number: ", int)
-    if answer != 0:
-        table = tables[answer-1]
-        query = 'SELECT first_name, last_name FROM "{}"'.format(table)
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        ui.print_result(column_names, rows, 'The 2 name columns of the {} table:'.format(table))
+    query = 'SELECT first_name, last_name FROM "{}"'.format(table)
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
     cursor.close()
     conn.close()
-    return
-'''
+    # ui.print_result(column_names, rows, 'The 2 name columns of the {} table:'.format(table))
+    title = 'The 2 name columns of the {} table:'.format(table)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
 @app.errorhandler(404)

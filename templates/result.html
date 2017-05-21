@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title> {{ title }} </title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+
+    <h1> {{ title }} </h1>
+
+    {% if rows == [] %}
+        <p>
+            Sorry, no results...
+        </p>
+    {% endif %}
+       
+    <form action="/">
+        <input type="submit" value="Back to main menu" >
+    </form>
+
+    <table border="1" >
+        {% for column_name in column_names %}
+             <th>   
+                 {{ column_name }}
+             </th>
+        {% endfor %} 
+             {% for row in rows %}
+                <tr>
+                    {% for item in row %}
+                        <td>
+                            {{ item }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}   
+    </table>
+
+</body>
+
+</html>

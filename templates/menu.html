@@ -12,13 +12,11 @@
 
     <h1> {{ title }} </h1>
 
-    <form action="/submenu">
             {% for key,value in menu_items %}
-                <input type="radio" name="submenu" value=" {{ value|e }} " > {{ key|e }} <br>
+                <p>
+                    <a href=" {{ value|e }}" > {{ key|e }} </a>
+                </p>
             {% endfor %}
-        </select>
-        <input type="submit" value="Submit">
-    </form>
 
 </body>
 

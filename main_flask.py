@@ -34,6 +34,42 @@ def handle_menu():
     return render_template('menu.html', title=title, menu_items=menu_items)
 
 
+'''
+Mentors and schools page [/mentors]
+On this page you should show the result of a query that returns the name of the mentors plus the name and country of the school (joining with the schools table) ordered by the mentors id column (columns: mentors.first_name, mentors.last_name, schools.name, schools.country). 
+SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors LEFT  JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;
+
+All school page [/all-school]
+On this page you should show the result of a query that returns the name of the mentors plus the name and country of the school (joining with the schools table) ordered by the mentors id column.
+BUT include all the schools, even if there's no mentor yet!
+columns: mentors.first_name, mentors.last_name, schools.name, schools.country
+SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors FULL  JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;
+
+Contacts page [/mentors-by-country]
+On this page you should show the result of a query that returns the number of the mentors per country ordered by the name of the countries
+columns: country, count
+SELECT country, COUNT(mentors.id) AS count FROM schools FULL JOIN mentors ON schools.city=mentors.city GROUP BY schools.country ORDER BY schools.country;
+
+Contacts page [/contacts]
+On this page you should show the result of a query that returns the name of the school plus the name of contact person at the school (from the mentors table) ordered by the name of the school
+columns: schools.name, mentors.first_name, mentors.last_name
+SELECT schools.name, mentors.first_name, mentors.last_name FROM schools RIGHT JOIN mentors ON schools.city = mentors.city ORDER BY schools.name;
+
+Applicants page [/applicants]
+On this page you should show the result of a query that returns the first name and the code of the applicants plus the creation_date of the application (joining with the applicants_mentors table) ordered by the creation_date in descending order
+BUT only for applications later than 2016-01-01
+columns: applicants.first_name, applicants.application_code, applicants_mentors.creation_date
+SELECT applicants.first_name, applicants.application_code, applicants_mentors.creation_date FROM applicants JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id WHERE applicants_mentors.creation_date > '2016-01-01' ORDER BY applicants_mentors.creation_date DESC; 
+
+Applicants and mentors page [/applicants-and-mentors]
+On this page you should show the result of a query that returns the first name and the code of the applicants plus the name of the assigned mentor (joining through the applicants_mentors table) ordered by the applicants id column
+Show all the applicants, even if they have no assigned mentor in the database!
+In this case use the string 'None' instead of the mentor name
+columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
+SELECT applicants.first_name, applicants.application_code, COALESCE (mentors.first_name, 'None'), COALESCE (mentors.last_name, 'None') FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id LEFT  JOIN mentors ON applicants_mentors.mentor_id=mentors.id ORDER BY applicants.id;
+'''
+
+
 @app.route('/menu_name_columns')
 def menu_name_columns():
     title = 'Name columns menu'

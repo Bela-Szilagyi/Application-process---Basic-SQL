@@ -3,7 +3,6 @@ import ui
 import queries
 from flask import Flask, render_template, request, redirect
 import psycopg2
-import sys
 
 
 app = Flask(__name__)
@@ -24,7 +23,10 @@ def init():
 @app.route('/')
 def handle_menu():
     title = 'Main menu'
-    menu_items = [("A query that returns the number of the mentors per country", "mentors-by-country"),
+    menu_items = [("A query that returns the first name and the code of the applicants plus the name of the assigned mentor", "applicants-and-mentors"),
+               ("A query that returns the first name and the code of the applicants plus the creation_date of the application", "applicants"),
+               ("A query that returns the name of the school plus the name of contact person at the school", "contacts"),
+               ("A query that returns the number of the mentors per country", "mentors-by-country"),
                ("A query that returns the name of the mentors plus the name and country of all the schools", "all-school"),
                ("A query that returns the name of the mentors plus the name and country of the school", "mentors"),
                ("A query that returns the 2 name columns of the given table","menu_name_columns"),
@@ -102,23 +104,23 @@ def mentors_by_country():
 
 '''
 Contacts page [/contacts]
-On this page you should show the result of a query that returns the name of the school plus the name of contact person at the school (from the mentors table) ordered by the name of the school
+On this page you should show the result of a query
+that returns the name of the school plus the name of contact person at the school (from the mentors table)
+ordered by the name of the school
 columns: schools.name, mentors.first_name, mentors.last_name
-SELECT schools.name, mentors.first_name, mentors.last_name FROM schools RIGHT JOIN mentors ON schools.city = mentors.city ORDER BY schools.name;
-
-Applicants page [/applicants]
-On this page you should show the result of a query that returns the first name and the code of the applicants plus the creation_date of the application (joining with the applicants_mentors table) ordered by the creation_date in descending order
-BUT only for applications later than 2016-01-01
-columns: applicants.first_name, applicants.application_code, applicants_mentors.creation_date
-SELECT applicants.first_name, applicants.application_code, applicants_mentors.creation_date FROM applicants JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id WHERE applicants_mentors.creation_date > '2016-01-01' ORDER BY applicants_mentors.creation_date DESC; 
-
-Applicants and mentors page [/applicants-and-mentors]
-On this page you should show the result of a query that returns the first name and the code of the applicants plus the name of the assigned mentor (joining through the applicants_mentors table) ordered by the applicants id column
-Show all the applicants, even if they have no assigned mentor in the database!
-In this case use the string 'None' instead of the mentor name
-columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
-SELECT applicants.first_name, applicants.application_code, COALESCE (mentors.first_name, 'None'), COALESCE (mentors.last_name, 'None') FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id LEFT  JOIN mentors ON applicants_mentors.mentor_id=mentors.id ORDER BY applicants.id;
 '''
+@app.route("/contacts")
+def contacts():
+    conn = init()
+    cursor = conn.cursor()
+    query = 'SELECT schools.name, mentors.first_name, mentors.last_name FROM schools LEFT JOIN mentors ON schools.city = mentors.city ORDER BY schools.name;'
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The name of the school plus the name of contact person at the school'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
 @app.route('/menu_name_columns')

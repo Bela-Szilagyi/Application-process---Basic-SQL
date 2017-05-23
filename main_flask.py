@@ -148,7 +148,8 @@ def applicants_and_mentors():
     columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
     '''
     query = "SELECT applicants.first_name, applicants.application_code, \
-             COALESCE (mentors.first_name, 'None'), COALESCE (mentors.last_name, 'None') \
+             COALESCE (mentors.first_name, 'None') AS mentor_first_name, \
+             COALESCE (mentors.last_name, 'None') AS mentor_last_name \
              FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id \
              LEFT JOIN mentors ON applicants_mentors.mentor_id=mentors.id \
              ORDER BY applicants.id;"

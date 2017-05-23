@@ -24,13 +24,9 @@ def get_name_columns(table):
 
 @part1.route('/menu_nicknames')
 def menu_nicknames():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT DISTINCT city FROM mentors;""")
-    rows = cursor.fetchall()
-    cities = [city[0] for city in rows]
-    cursor.close()
-    conn.close()
+    query = 'SELECT DISTINCT city FROM mentors'
+    result = data_manager.handle_database(query)
+    cities = [city[0] for city in result['rows']]
     title = 'From which city do you want the nicknames of the mentors?'
     menu_items = []
     for city in cities:
@@ -40,27 +36,19 @@ def menu_nicknames():
 
 @part1.route('/get_nicknames/<city>')
 def get_nicknames(city):
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT nick_name FROM mentors WHERE city='{}'".format(city)
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The nick_name-s of all mentors working at {}'.format(city)
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @part1.route('/menu_full_name_and_phone_from_fist_name')
 def menu_full_name_and_phone_from_fist_name():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT first_name FROM applicants;""")
-    rows = cursor.fetchall()
-    names = [name[0] for name in rows]
-    cursor.close()
-    conn.close()
+    query = ('SELECT first_name FROM applicants')
+    result = data_manager.handle_database(query)
+    names = [name[0] for name in result['rows']]
     title = 'Which applicant\'s name and phone number do you want to know?'
     menu_items = []
     for name in names:
@@ -70,32 +58,24 @@ def menu_full_name_and_phone_from_fist_name():
 
 @part1.route('/get_full_name_and_phone_from_fist_name/<name>')
 def get_full_name_and_phone_from_fist_name(name):
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT CONCAT (first_name, ' ', last_name) AS full_name, phone_number FROM applicants WHERE first_name='{}'".format(name)
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'Applicant data about {} in 2 columns: full_name, phone_number'.format(name)
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @part1.route('/menu_applicant_from_email')
 def menu_applicant_from_email():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT email FROM applicants;""")
-    rows = cursor.fetchall()
-    emails = [email[0] for email in rows]
+    query = ('SELECT email FROM applicants')
+    result = data_manager.handle_database(query)
+    emails = [email[0] for email in result['rows']]
     chopped_emails = []
     for email in emails:
         while email[0] != '@':
             email = email[1:]
         chopped_emails.append(email)
-    cursor.close()
-    conn.close()
     title = 'Which e-mail address data do you want to know?'
     menu_items = []
     for email in chopped_emails:
@@ -105,32 +85,26 @@ def menu_applicant_from_email():
 
 @part1.route('/get_applicant_from_email/<email>')
 def get_applicant_from_email(email):
-    conn = init()
-    cursor = conn.cursor()
     email = '%' + email
     query = "SELECT CONCAT (first_name, ' ', last_name) AS full_name, phone_number FROM applicants WHERE email LIKE '{}'".format(email)
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    cursor.close()
-    conn.close()    
-    title = 'Applicant data for {} e-mail address'.format(email)
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    result = data_manager.handle_database(query)
+    title = 'Applicant data for {} e-mail address'.format(email[1:])
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @part1.route("/menu_insert_applicant_data")
 def menu_insert_applicant_data():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT application_code FROM applicants;""")
-    rows = cursor.fetchall()
-    application_codes = [code[0] for code in rows]
+    query = ('SELECT application_code FROM applicants')
+    result = data_manager.handle_database(query)
+    application_codes = [code[0] for code in result['rows']]
     application_code = max(application_codes) + 1
-    cursor.execute("""SELECT * FROM applicants;""")
+    query = ('SELECT * FROM applicants')
+    result = data_manager.handle_database(query)
     title = "Application form"
-    column_names = [desc[0] for desc in cursor.description][1:-1]
     # predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
-    return render_template('empty_applicant_form.html', title=title, column_names=column_names, code=application_code)
+    return render_template('empty_applicant_form.html', title=title, column_names=result['column_names'][1:-1], code=application_code)
 
 
 @part1.route("/get_inserted_applicant_data")
@@ -140,18 +114,16 @@ def get_inserted_applicant_data():
     phone_number = request.args.get('phone_number')
     email = request.args.get('email')
     application_code = request.args.get('code')
-    SQL = "INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES (%s, %s, %s, %s, %s);"
-    data = (first_name, last_name, phone_number, email, application_code)
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute(SQL, data)
-    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (application_code, ))
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    cursor.close()
-    conn.close()
+    query = ("INSERT INTO applicants (first_name, last_name, phone_number, email, application_code) VALUES ('{}', '{}', '{}', '{}', '{}')".format(first_name, last_name, phone_number, email, application_code))
+    result = data_manager.handle_database(query)
+    if result['error'] != 'No error':
+        return render_template('error.html', error=result['error'])
+    query = ('SELECT * FROM applicants WHERE application_code={}'.format(application_code))
+    result = data_manager.handle_database(query)
     title = 'Applicant data after inserting'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @part1.route("/menu_update_applicant_data")

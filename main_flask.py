@@ -3,7 +3,6 @@ TODO
     mogrify
     error handling + back button
     html include
-    what if no result?
     create modules
 '''
 
@@ -59,7 +58,7 @@ def mentors():
     '''
     conn = init()
     cursor = conn.cursor()
-    query = 'SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors LEFT JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;'
+    query = "SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors LEFT JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;"
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]

@@ -11,12 +11,6 @@
 <body>
 
     <h1> {{ title }} </h1>
-
-    {% if rows == [] %}
-        <p>
-            Sorry, no results...
-        </p>
-    {% endif %}
        
     <form action="/">
         <input type="submit" value="Back to main menu" class="button" >
@@ -24,29 +18,38 @@
 
     <br>
 
-    <table>
-        {% for column_name in column_names %}
-             <th>   
-                 {{ column_name }}
-             </th>
-        {% endfor %} 
-             {% for row in rows %}
+    {% if row_count == 0 %}
+        <p>
+            Sorry, no results...
+        </p>
+
+    {% else %}
+
+        <table>
+            {% for column_name in column_names %}
+                <th>   
+                    {{ column_name }}
+                </th>
+            {% endfor %} 
+                {% for row in rows %}
+                    <tr>
+                        {% for item in row %}
+                            <td>
+                                {{ item }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}   
+            <tfoot>
                 <tr>
-                    {% for item in row %}
-                        <td>
-                            {{ item }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}   
-        <tfoot>
-            <tr>
-                <td> Number of results </td>
-                <td> {{ row_count }} </td>
-                
-            </tr>    
-        </tfoot>
-    </table>
+                    <td> Number of results </td>
+                    <td> {{ row_count }} </td>
+                    
+                </tr>    
+            </tfoot>
+        </table>
+
+    {% endif %}
 
 </body>
 

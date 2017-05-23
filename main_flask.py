@@ -11,21 +11,9 @@ import ui
 import queries
 from flask import Flask, render_template, request, redirect
 import psycopg2
-
+import data_manager
 
 app = Flask(__name__)
-
-
-def init():
-    try:
-        connect_str = "dbname='en' user='en' host='localhost'"
-        conn = psycopg2.connect(connect_str)
-        conn.autocommit = True
-        return conn
-    except Exception as e:
-        error_message = "Uh oh, can't connect. Invalid dbname, user or password? \n" + str(e)
-        ui.print_error_message(error_message)
-        sys.exit()
 
 
 @app.route('/')
@@ -56,20 +44,15 @@ def mentors():
     (joining with the schools table) ordered by the mentors id column
     (columns: mentors.first_name, mentors.last_name, schools.name, schools.country).
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT mentors.first_name, mentors.last_name, schools.name, schools.country \
              FROM mentors LEFT JOIN schools \
              ON mentors.city=schools.city \
              ORDER BY mentors.id;"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The name of the mentors plus the name and country of the school'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title, 
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route("/all-school")

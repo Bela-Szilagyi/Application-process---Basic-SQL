@@ -1,3 +1,12 @@
+'''
+TODO
+mogrify
+error handling
+html include
+number of rows in result set
+what if no result?
+'''
+
 import sys
 import ui
 import queries

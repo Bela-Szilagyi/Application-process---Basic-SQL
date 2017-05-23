@@ -24,7 +24,8 @@ def init():
 @app.route('/')
 def handle_menu():
     title = 'Main menu'
-    menu_items = [("A query that returns the name of the mentors plus the name and country of the school", "mentors"),
+    menu_items = [("A query that returns the name of the mentors plus the name and country of all the schools", "all-school"),
+               ("A query that returns the name of the mentors plus the name and country of the school", "mentors"),
                ("A query that returns the 2 name columns of the given table","menu_name_columns"),
                ("A query that returns the nicknames of all mentors working at the given city","menu_nicknames"),
                ("A query that returns applicant data about given name in 2 columns: full_name, phone_number","menu_full_name_and_phone_from_fist_name"),
@@ -37,10 +38,10 @@ def handle_menu():
 
 '''
 Mentors and schools page [/mentors]
-On this page you should show the result of a query 
-that returns the name of the mentors plus the name and country of the school 
-(joining with the schools table) ordered by the mentors id column 
-(columns: mentors.first_name, mentors.last_name, schools.name, schools.country). 
+On this page you should show the result of a query
+that returns the name of the mentors plus the name and country of the school
+(joining with the schools table) ordered by the mentors id column
+(columns: mentors.first_name, mentors.last_name, schools.name, schools.country).
 '''
 @app.route("/mentors")
 def mentors():
@@ -52,17 +53,33 @@ def mentors():
     column_names = [desc[0] for desc in cursor.description]
     cursor.close()
     conn.close()
-    title = 'the name of the mentors plus the name and country of the school'
+    title = 'The name of the mentors plus the name and country of the school'
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
 '''
 All school page [/all-school]
-On this page you should show the result of a query that returns the name of the mentors plus the name and country of the school (joining with the schools table) ordered by the mentors id column.
+On this page you should show the result of a query 
+that returns the name of the mentors plus the name and country of the school 
+(joining with the schools table) ordered by the mentors id column.
 BUT include all the schools, even if there's no mentor yet!
 columns: mentors.first_name, mentors.last_name, schools.name, schools.country
-SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors FULL  JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;
+'''
+@app.route("/all-school")
+def all_school():
+    conn = init()
+    cursor = conn.cursor()
+    query = 'SELECT mentors.first_name, mentors.last_name, schools.name, schools.country FROM mentors FULL JOIN schools ON mentors.city=schools.city ORDER BY mentors.id;'
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The name of the mentors plus the name and country of all the schools'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
+
+'''
 Contacts page [/mentors-by-country]
 On this page you should show the result of a query that returns the number of the mentors per country ordered by the name of the countries
 columns: country, count

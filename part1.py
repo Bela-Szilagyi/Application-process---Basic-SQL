@@ -163,7 +163,7 @@ def get_updated_applicant_data():
              SET first_name='{}', last_name='{}', phone_number='{}', email='{}' \
              WHERE application_code='{}'".format(first_name, last_name, phone_number, email, application_code))
     data_manager.handle_database(query)
-    query = ("SELECT * FROM applicants WHERE application_code='{}'".format(application_code))
+    query = "SELECT * FROM applicants WHERE application_code='{}'".format(application_code)
     result = data_manager.handle_database(query)
     title = 'Applicant data after update'
     return render_template('result.html',
@@ -173,11 +173,9 @@ def get_updated_applicant_data():
 
 @part1.route('/menu_remove_applicants_by_email_domain')
 def menu_remove_applicants_by_email_domain():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT email FROM applicants;""")
-    rows = cursor.fetchall()
-    emails = [email[0] for email in rows]
+    query = 'SELECT email FROM applicants'
+    result = data_manager.handle_database(query)
+    emails = [email[0] for email in result['rows']]
     chopped_emails = []
     for email in emails:
         while email[0] != '@':
@@ -185,8 +183,6 @@ def menu_remove_applicants_by_email_domain():
         email = email[1:]
         chopped_emails.append(email)
     chopped_emails = set(chopped_emails)
-    cursor.close()
-    conn.close()
     title = 'Choose domain which you want to remove'
     menu_items = []
     for email in chopped_emails:
@@ -197,9 +193,6 @@ def menu_remove_applicants_by_email_domain():
 @part1.route('/remove_applicants_by_email_domain/<domain>')
 def remove_applicants_by_email_domain(domain):
     email = '%' + domain
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""DELETE FROM applicants WHERE email LIKE %s;""", (email, ))
-    cursor.close()
-    conn.close()
+    query = "DELETE FROM applicants WHERE email LIKE '{}'".format(email)
+    data_manager.handle_database(query)
     return redirect('/')

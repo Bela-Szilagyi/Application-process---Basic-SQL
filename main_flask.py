@@ -24,7 +24,8 @@ def init():
 @app.route('/')
 def handle_menu():
     title = 'Main menu'
-    menu_items = [("A query that returns the name of the mentors plus the name and country of all the schools", "all-school"),
+    menu_items = [("A query that returns the number of the mentors per country", "mentors-by-country"),
+               ("A query that returns the name of the mentors plus the name and country of all the schools", "all-school"),
                ("A query that returns the name of the mentors plus the name and country of the school", "mentors"),
                ("A query that returns the 2 name columns of the given table","menu_name_columns"),
                ("A query that returns the nicknames of all mentors working at the given city","menu_nicknames"),
@@ -60,7 +61,7 @@ def mentors():
 '''
 All school page [/all-school]
 On this page you should show the result of a query 
-that returns the name of the mentors plus the name and country of the school 
+that returns the name of the mentors plus the name and country of the school
 (joining with the schools table) ordered by the mentors id column.
 BUT include all the schools, even if there's no mentor yet!
 columns: mentors.first_name, mentors.last_name, schools.name, schools.country
@@ -81,10 +82,25 @@ def all_school():
 
 '''
 Contacts page [/mentors-by-country]
-On this page you should show the result of a query that returns the number of the mentors per country ordered by the name of the countries
+On this page you should show the result of a query
+that returns the number of the mentors per country ordered by the name of the countries
 columns: country, count
-SELECT country, COUNT(mentors.id) AS count FROM schools FULL JOIN mentors ON schools.city=mentors.city GROUP BY schools.country ORDER BY schools.country;
+'''
+@app.route("/mentors-by-country")
+def mentors_by_country():
+    conn = init()
+    cursor = conn.cursor()
+    query = 'SELECT country, COUNT(mentors.id) AS count FROM schools RIGHT JOIN mentors ON schools.city=mentors.city GROUP BY schools.country ORDER BY schools.country;'
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The number of the mentors per country'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
+
+'''
 Contacts page [/contacts]
 On this page you should show the result of a query that returns the name of the school plus the name of contact person at the school (from the mentors table) ordered by the name of the school
 columns: schools.name, mentors.first_name, mentors.last_name

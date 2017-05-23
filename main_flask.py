@@ -146,6 +146,30 @@ def applicants():
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
+'''
+Applicants and mentors page [/applicants-and-mentors]
+On this page you should show the result of a query
+that returns the first name and the code of the applicants plus the name of the assigned mentor
+(joining through the applicants_mentors table)
+ordered by the applicants id column
+Show all the applicants, even if they have no assigned mentor in the database!
+In this case use the string 'None' instead of the mentor name
+columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
+'''
+@app.route("/applicants-and-mentors")
+def applicants_and_mentors():
+    conn = init()
+    cursor = conn.cursor()
+    query = "SELECT applicants.first_name, applicants.application_code, COALESCE (mentors.first_name, 'None'), COALESCE (mentors.last_name, 'None') FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id LEFT JOIN mentors ON applicants_mentors.mentor_id=mentors.id ORDER BY applicants.id;"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The first name and the code of the applicants plus the name of the assigned mentor'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
+
 @app.route('/menu_name_columns')
 def menu_name_columns():
     title = 'Name columns menu'

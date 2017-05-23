@@ -63,7 +63,7 @@ table, th, td {
     padding: 5px;
 }
 
-th {
+th, tfoot, tfoot td {
     background-color: #E3F09B;
     color: #5B5941;
     border-color: #5B5941;

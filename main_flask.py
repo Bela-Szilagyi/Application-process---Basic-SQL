@@ -3,7 +3,6 @@ TODO
     mogrify
     error handling + back button
     html include
-    number of rows in result set
     what if no result?
     create modules
 '''
@@ -64,10 +63,11 @@ def mentors():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The name of the mentors plus the name and country of the school'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route("/all-school")
@@ -86,10 +86,11 @@ def all_school():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The name of the mentors plus the name and country of all the schools'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route("/mentors-by-country")
@@ -106,10 +107,11 @@ def mentors_by_country():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The number of the mentors per country'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route("/contacts")
@@ -127,10 +129,11 @@ def contacts():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The name of the school plus the name of contact person at the school'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route("/applicants")
@@ -150,10 +153,11 @@ def applicants():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The first name and the code of the applicants plus the creation_date of the application'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route("/applicants-and-mentors")
@@ -174,10 +178,11 @@ def applicants_and_mentors():
     cursor.execute(query)
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
+    row_count = cursor.rowcount
     cursor.close()
     conn.close()
     title = 'The first name and the code of the applicants plus the name of the assigned mentor'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
 
 
 @app.route('/menu_name_columns')

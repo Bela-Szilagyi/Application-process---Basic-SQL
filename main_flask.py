@@ -123,6 +123,29 @@ def contacts():
     return render_template('result.html', title=title, column_names=column_names, rows=rows)
 
 
+'''
+Applicants page [/applicants]
+On this page you should show the result of a query
+that returns the first name and the code of the applicants plus the creation_date of the application
+(joining with the applicants_mentors table)
+ordered by the creation_date in descending order
+BUT only for applications later than 2016-01-01
+columns: applicants.first_name, applicants.application_code, applicants_mentors.creation_date
+'''
+@app.route("/applicants")
+def applicants():
+    conn = init()
+    cursor = conn.cursor()
+    query = "SELECT applicants.first_name, applicants.application_code, applicants_mentors.creation_date FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id WHERE applicants_mentors.creation_date > '2016-01-01' ORDER BY applicants_mentors.creation_date DESC;"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    title = 'The first name and the code of the applicants plus the creation_date of the application'
+    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+
+
 @app.route('/menu_name_columns')
 def menu_name_columns():
     title = 'Name columns menu'

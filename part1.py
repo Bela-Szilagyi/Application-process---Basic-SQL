@@ -128,11 +128,9 @@ def get_inserted_applicant_data():
 
 @part1.route("/menu_update_applicant_data")
 def menu_update_applicant_data():
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT CONCAT (first_name, ' ', last_name) AS "full_name" FROM applicants ORDER BY id;""")
-    rows = cursor.fetchall()
-    names = [name[0] for name in rows]
+    query = ("SELECT CONCAT (first_name, ' ', last_name) AS full_name FROM applicants ORDER BY id")
+    result = data_manager.handle_database(query)
+    names = [name[0] for name in result['rows']]
     title = 'Which applicant\'s data do you want to update?'
     menu_items = []
     for name in names:
@@ -142,19 +140,14 @@ def menu_update_applicant_data():
 
 @part1.route('/update_applicant_data/<name>')
 def updated_applicant_data(name):
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT first_name, last_name, phone_number, email, application_code FROM applicants WHERE CONCAT (first_name, ' ', last_name) = '{}'".format(name)
-    cursor.execute(query)
-    rows = cursor.fetchall()
+    result = data_manager.handle_database(query)
     datas = []
-    datas.append(('first_name', rows[0][0]))
-    datas.append(('last_name', rows[0][1]))
-    datas.append(('phone_number', rows[0][2]))
-    datas.append(('email', rows[0][3]))
-    application_code = rows[0][4]
-    cursor.close()
-    conn.close()
+    datas.append(('first_name', result['rows'][0][0]))
+    datas.append(('last_name', result['rows'][0][1]))
+    datas.append(('phone_number', result['rows'][0][2]))
+    datas.append(('email', result['rows'][0][3]))
+    application_code = result['rows'][0][4]
     title = 'Appllication form'
     return render_template('filled_applicant_form.html', title=title, datas=datas, code=application_code)
 
@@ -166,18 +159,16 @@ def get_updated_applicant_data():
     phone_number = request.args.get('phone_number')
     email = request.args.get('email')
     application_code = request.args.get('code')
-    SQL = "UPDATE applicants SET first_name=%s, last_name=%s, phone_number=%s, email=%s WHERE application_code=%s"
-    data = (first_name, last_name, phone_number, email, application_code)
-    conn = init()
-    cursor = conn.cursor()
-    cursor.execute(SQL, data)
-    cursor.execute("""SELECT * FROM applicants WHERE application_code=%s;""", (application_code, ))
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    cursor.close()
-    conn.close()
+    query = ("UPDATE applicants \
+             SET first_name='{}', last_name='{}', phone_number='{}', email='{}' \
+             WHERE application_code='{}'".format(first_name, last_name, phone_number, email, application_code))
+    data_manager.handle_database(query)
+    query = ("SELECT * FROM applicants WHERE application_code='{}'".format(application_code))
+    result = data_manager.handle_database(query)
     title = 'Applicant data after update'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @part1.route('/menu_remove_applicants_by_email_domain')

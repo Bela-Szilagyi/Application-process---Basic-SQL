@@ -1,7 +1,6 @@
 '''
 TODO
     mogrify
-    error handling + back button
     html include
     create modules
 '''

@@ -51,7 +51,7 @@ def mentors():
     result = data_manager.handle_database(query)
     title = 'The name of the mentors plus the name and country of the school'
     return render_template('result.html',
-                           title=title, 
+                           title=title,
                            column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
@@ -65,19 +65,14 @@ def all_school():
     BUT include all the schools, even if there's no mentor yet!
     columns: mentors.first_name, mentors.last_name, schools.name, schools.country
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = 'SELECT mentors.first_name, mentors.last_name, schools.name, schools.country \
              FROM mentors FULL JOIN schools ON mentors.city=schools.city \
              ORDER BY mentors.id;'
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The name of the mentors plus the name and country of all the schools'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route("/mentors-by-country")
@@ -88,20 +83,15 @@ def mentors_by_country():
     that returns the number of the mentors per country ordered by the name of the countries
     columns: country, count
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = 'SELECT country, COUNT(mentors.id) AS count \
              FROM schools RIGHT JOIN mentors ON schools.city=mentors.city \
              GROUP BY schools.country \
              ORDER BY schools.country;'
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The number of the mentors per country'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route("/contacts")
@@ -113,19 +103,14 @@ def contacts():
     ordered by the name of the school
     columns: schools.name, mentors.first_name, mentors.last_name
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = 'SELECT schools.name, mentors.first_name, mentors.last_name \
              FROM schools LEFT JOIN mentors ON schools.city = mentors.city \
              ORDER BY schools.name;'
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The name of the school plus the name of contact person at the school'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route("/applicants")
@@ -139,20 +124,15 @@ def applicants():
     BUT only for applications later than 2016-01-01
     columns: applicants.first_name, applicants.application_code, applicants_mentors.creation_date
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT applicants.first_name, applicants.application_code, applicants_mentors.creation_date \
              FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id \
              WHERE applicants_mentors.creation_date > '2016-01-01' \
              ORDER BY applicants_mentors.creation_date DESC;"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The first name and the code of the applicants plus the creation_date of the application'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route("/applicants-and-mentors")
@@ -167,21 +147,16 @@ def applicants_and_mentors():
     In this case use the string 'None' instead of the mentor name
     columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
     '''
-    conn = init()
-    cursor = conn.cursor()
     query = "SELECT applicants.first_name, applicants.application_code, \
              COALESCE (mentors.first_name, 'None'), COALESCE (mentors.last_name, 'None') \
              FROM applicants LEFT JOIN applicants_mentors ON applicants.id=applicants_mentors.applicant_id \
              LEFT JOIN mentors ON applicants_mentors.mentor_id=mentors.id \
              ORDER BY applicants.id;"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
-    row_count = cursor.rowcount
-    cursor.close()
-    conn.close()
+    result = data_manager.handle_database(query)
     title = 'The first name and the code of the applicants plus the name of the assigned mentor'
-    return render_template('result.html', title=title, column_names=column_names, rows=rows, row_count=row_count)
+    return render_template('result.html',
+                           title=title,
+                           column_names=result['column_names'], rows=result['rows'], row_count=result['row_count'])
 
 
 @app.route('/menu_name_columns')

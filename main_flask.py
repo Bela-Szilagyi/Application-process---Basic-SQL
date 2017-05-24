@@ -2,7 +2,7 @@
 TODO
     mogrify
     html include
-    create modules
+    placeholder for predefined applicant data
 '''
 
 import sys

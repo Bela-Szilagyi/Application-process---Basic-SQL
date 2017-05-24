@@ -46,10 +46,12 @@ h1 {
     text-decoration: none;
     display: inline-block;
     float: right;
+    
 }
 
 .button:hover {
     background-color: #E3F09B;
+    cursor: pointer;
 }
 
 table {

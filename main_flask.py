@@ -2,7 +2,6 @@
 TODO
     mogrify
     html include
-    placeholder for predefined applicant data
 '''
 
 import sys

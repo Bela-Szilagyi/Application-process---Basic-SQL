@@ -1,23 +1,21 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html>
+{% block title %}
+    
+{% endblock %}
 
-<head>
+{% block head %}
 
-    <title> {{ title }} </title>
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-</head>
+  {{ super() }}
 
-<body>
+{% endblock %}
 
-    <h1> {{ title }} </h1>
-
+{% block content %}
+    
     <ul>
         {% for key,value in menu_items %}
             <li> <a href=" {{ value|e }}" > {{ key|e }} </a> </li>
         {% endfor %}
     </ul>
 
-</body>
-
-</html>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <title>{% block title %}{% endblock %} Application process </title>
+    {% endblock %}
+  </head>
+  <body>
+
+    <h1> {{ title }} </h1>
+        
+    <form action="/">
+        <input type="submit" value="Main menu" class="button" >
+    </form>
+
+    <div id="content">{% block content %}{% endblock %}</div>
+    
+  </body>
+</html>

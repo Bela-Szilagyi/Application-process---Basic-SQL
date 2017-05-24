@@ -1,22 +1,16 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html>
+{% block title %}
+    
+{% endblock %}
 
-<head>
+{% block head %}
 
-    <title> {{ title }} </title>
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-</head>
+  {{ super() }}
 
-<body>
+{% endblock %}
 
-    <h1> {{ title }} </h1>
-       
-    <form action="/">
-        <input type="submit" value="Back to main menu" class="button" >
-    </form>
-
-    <br>
+{% block content %}
 
     {% if row_count == 0 %}
         <p>
@@ -51,6 +45,4 @@
 
     {% endif %}
 
-</body>
-
-</html>
+{% endblock %}

@@ -103,8 +103,11 @@ def menu_insert_applicant_data():
     query = ('SELECT * FROM applicants')
     result = data_manager.handle_database(query)
     title = "Application form"
-    # predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com", )
-    return render_template('empty_applicant_form.html', title=title, column_names=result['column_names'][1:-1], code=application_code)
+    predefined_applicaton_data = ("Markus", "Schaffarzyk", "003620/725-2666", "djnovus@groovecoverage.com")
+    columns = []
+    for i, column in enumerate(result['column_names'][1:-1]):
+        columns.append((column, predefined_applicaton_data[i]))
+    return render_template('empty_applicant_form.html', title=title, column_names=columns, code=application_code, placeholders = predefined_applicaton_data)
 
 
 @part1.route("/get_inserted_applicant_data")

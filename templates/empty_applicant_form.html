@@ -17,10 +17,10 @@
             {% for data in column_names %}
                 <tr>
                     <td>
-                        <label for="{{ data }}"> {{ data }} </label>
+                        <label for="{{ data[0] }}"> {{ data[0] }} </label>
                     </td>
                     <td>
-                        <input name="{{ data }}" id="{{ data }}" >
+                        <input name="{{ data[0] }}" id="{{ data[0] }}" placeholder="{{ data[1] }}" >
                     </td>
                 </tr>
             {% endfor %}
